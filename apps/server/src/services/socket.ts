@@ -1,28 +1,31 @@
 import { Server } from 'socket.io';
 
 class SocketService {
-
     private _io: Server;
 
     constructor() {
+        console.log("Init Socket Service...");
         this._io = new Server({
             cors: {
-                allowedHeaders: "*",
+                allowedHeaders: ["*"],
                 origin: "*",
             }
         });
-        this.initListeners();
+    }
+
+    public initListeners() {
+        const io = this._io;
+        io.on("connect", (socket) => {
+            socket.emit("log", "Hello from server")
+            socket.on("event:message", (message) => {
+                console.log(`clientToServerMessage triggeres ${message}`)
+            })
+        })
+
     }
 
     get io() {
         return this._io;
-    }
-
-    public initListeners() {
-        const io = this.io;
-        io.on("connect", server => {
-            console.log("socket init listeners", server);
-        })
     }
 }
 
